@@ -16,7 +16,7 @@ import java.util.List;
  *         <p>
  *         This class is a serlization efficient, but memory inefficient implementation of BitStream
  */
-public class ProtocolBits extends AbstractCollection<Bit> implements Collection<Bit>, BitStream<Bit>, Serializable
+public class ProtocolBits extends AbstractCollection<Bit> implements Collection<Bit>, BitStream<Bit,ProtocolBits>, Serializable
 {
     private transient List<Bit> bits;
 

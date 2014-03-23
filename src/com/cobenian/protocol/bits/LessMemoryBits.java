@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author brweber2
  */
-public class LessMemoryBits implements BitStream<byte[]>, Serializable
+public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serializable
 {
     public static final int DEFAULT_BUFFER_SIZE = 64;
 
@@ -93,8 +93,12 @@ public class LessMemoryBits implements BitStream<byte[]>, Serializable
         return (byte) ~ getOneMask(bitInByte);
     }
 
-    public LessMemoryBits set(int position, boolean isOne)
+    public LessMemoryBits set(int position, Boolean isOne)
     {
+        if ( isOne == null )
+        {
+            throw new RuntimeException("Bit cannot be null, must be either 0 or 1.");
+        }
         if ( outOfRange(position) )
         {
             expandTo(position);
@@ -112,7 +116,7 @@ public class LessMemoryBits implements BitStream<byte[]>, Serializable
         return this;
     }
 
-    public boolean get(int position)
+    public Boolean get(int position)
     {
         if ( outOfRange(position) )
         {
