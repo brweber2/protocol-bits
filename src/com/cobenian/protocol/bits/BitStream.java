@@ -5,15 +5,13 @@ package com.cobenian.protocol.bits;
  */
 public interface BitStream<BitType, BitRange extends Bits<BitType>> extends Bits<BitType>
 {
-    BitType get(int position);
-
     BitRange set(int position, BitType bit);
 
     BitRange clear(int position);
 
     BitRange flip(int position);
 
-    int length();
+    BitRange getInclusive(int start, int end);
 
-    byte[] toByteArray();
+    BitRange getExclusive(int start, int end);
 }

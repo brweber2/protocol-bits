@@ -1,8 +1,13 @@
 package com.cobenian.protocol.bits;
 
 /**
- * Created by brweber2 on 3/23/14.
+ * @author brweber2
  */
-public interface Bits<T>
+public interface Bits<BitType>
 {
+    BitType get(int position);
+
+    int length();
+
+    byte[] toByteArray();
 }

@@ -25,6 +25,11 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
         this.bits = new ArrayList<>();
     }
 
+    public ProtocolBits(List<Bit> bits)
+    {
+        this.bits = bits;  // todo copy all the bits?
+    }
+
     public ProtocolBits set(int position, Bit bit)
     {
         if (position >= bits.size())
@@ -51,6 +56,18 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
     {
         set(position, get(position).not());
         return this;
+    }
+
+    @Override
+    public ProtocolBits getInclusive(int start, int end)
+    {
+        return new ProtocolBits(bits.subList(start, end + 1));
+    }
+
+    @Override
+    public ProtocolBits getExclusive(int start, int end)
+    {
+        return new ProtocolBits(bits.subList(start, end));
     }
 
     public int length()
@@ -123,21 +140,21 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
         for (int i = 0; i < numberOfBytesToRead; i++)
         {
             byte b = in.readByte();
-            bits.set(8 * i + 0, new Bit((b & 0x80) > 0));
-            bits.set(8 * i + 1, new Bit((b & 0x40) > 0));
-            bits.set(8 * i + 2, new Bit((b & 0x20) > 0));
-            bits.set(8 * i + 3, new Bit((b & 0x10) > 0));
-            bits.set(8 * i + 4, new Bit((b & 0x08) > 0));
-            bits.set(8 * i + 5, new Bit((b & 0x04) > 0));
-            bits.set(8 * i + 6, new Bit((b & 0x02) > 0));
-            bits.set(8 * i + 7, new Bit((b & 0x01) > 0));
+            bits.set(8 * i + 0, new Bit((b & 0x80) != 0));
+            bits.set(8 * i + 1, new Bit((b & 0x40) != 0));
+            bits.set(8 * i + 2, new Bit((b & 0x20) != 0));
+            bits.set(8 * i + 3, new Bit((b & 0x10) != 0));
+            bits.set(8 * i + 4, new Bit((b & 0x08) != 0));
+            bits.set(8 * i + 5, new Bit((b & 0x04) != 0));
+            bits.set(8 * i + 6, new Bit((b & 0x02) != 0));
+            bits.set(8 * i + 7, new Bit((b & 0x01) != 0));
         }
         if (numberOfRemainingBits > 0)
         {
             byte b = in.readByte();
             for (int y = 0; y < numberOfRemainingBits; y++)
             {
-                bits.set(8 * numberOfBytesToRead + y, new Bit((b & getMask(y)) > 0));
+                bits.set(8 * numberOfBytesToRead + y, new Bit((b & getMask(y)) != 0));
             }
         }
     }
@@ -225,14 +242,14 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
         while ((i = inputStream.read()) != -1)
         {
             byte b = (byte) i;
-            bits.set(index++, new Bit((b & 0x80) > 0));
-            bits.set(index++, new Bit((b & 0x40) > 0));
-            bits.set(index++, new Bit((b & 0x20) > 0));
-            bits.set(index++, new Bit((b & 0x10) > 0));
-            bits.set(index++, new Bit((b & 0x08) > 0));
-            bits.set(index++, new Bit((b & 0x04) > 0));
-            bits.set(index++, new Bit((b & 0x02) > 0));
-            bits.set(index++, new Bit((b & 0x01) > 0));
+            bits.set(index++, new Bit((b & 0x80) != 0));
+            bits.set(index++, new Bit((b & 0x40) != 0));
+            bits.set(index++, new Bit((b & 0x20) != 0));
+            bits.set(index++, new Bit((b & 0x10) != 0));
+            bits.set(index++, new Bit((b & 0x08) != 0));
+            bits.set(index++, new Bit((b & 0x04) != 0));
+            bits.set(index++, new Bit((b & 0x02) != 0));
+            bits.set(index++, new Bit((b & 0x01) != 0));
         }
         return bits;
     }

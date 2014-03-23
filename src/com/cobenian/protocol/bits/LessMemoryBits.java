@@ -38,6 +38,7 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
 
     private void expandTo(int position)
     {
+//        System.err.println("expanding to " + position);
         int bitsNeeded = position - bitCount;
         int numberOfBytesNeeded = bitsNeeded / 8;
         int remainingBits = bitsNeeded % 8;
@@ -52,6 +53,7 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
         {
             bytesUsed++;
         }
+//        System.err.println("number of bytes needed? " + numberOfBytesNeeded);
         for ( int i = bytesUsed; i < bytesUsed + numberOfBytesNeeded; i++ )
         {
             setByteFor(i, (byte)0);
@@ -63,6 +65,10 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
     {
         int listIndex = bytePosition / bufferSize;
         int byteIndex = bytePosition % bufferSize;
+        while ( bits.size() <= listIndex )
+        {
+            bits.add(new byte[bufferSize]);
+        }
         byte[] bytes = bits.get(listIndex);
         bytes[byteIndex] = b;
     }
@@ -73,19 +79,24 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
         int remainingBits = bitPosition % 8;
         if ( remainingBits != 0 )
         {
+            System.err.println("incrementing");
             bytePosition++;
         }
 
+        System.err.println("byte position is " + bytePosition + " for bit " + bitPosition);
+
         int listIndex = bytePosition / bufferSize;
         int byteIndex = bytePosition % bufferSize;
+        System.err.println("getting byte array " + listIndex + " for bit " + bitPosition);
         byte[] bytes = bits.get(listIndex);
+        System.err.println("getting byte index " + byteIndex + " for bit " + bitPosition);
         return bytes[byteIndex];
     }
 
     public byte getOneMask(int bitInByte)
     {
         byte b = 1;
-        return (byte) (b << ((8 - bitInByte) - 1));
+        return (byte) (b << ((8 - bitInByte - 1)));
     }
 
     public byte getZeroMask(int bitInByte)
@@ -104,15 +115,29 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
             expandTo(position);
         }
         int bitInByte = position % 8;
+        System.err.println("getting byte at bit position " + position);
         byte b = getByteFor(position);
+        System.err.println("before anything: " + byteToString(b));
         if ( isOne ) {
+            System.err.println("or mask is " + byteToString(getOneMask(bitInByte)) + " for bit " + bitInByte);
+            System.err.println("before byte: " + byteToString(b));
             b = (byte) (b | getOneMask(bitInByte));
+            System.err.println("after byte: " + byteToString(b));
         }
         else
         {
+            System.err.println("and mask is " + byteToString(getOneMask(bitInByte)) + " for bit " + bitInByte);
             b = (byte) (b & getZeroMask(bitInByte));
         }
-        setByteFor(position, b);
+        System.err.println("saving " + byteToString(b) + " at " + position);
+        int bytePosition = position / 8;
+        int remainingBits = position % 8;
+        if ( remainingBits != 0 )
+        {
+            bytePosition++;
+        }
+        System.err.println("setting byte " + bytePosition + " to " + byteToString(b));
+        setByteFor(bytePosition, b);
         return this;
     }
 
@@ -122,9 +147,12 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
         {
             throw new IndexOutOfBoundsException(position + " is out of the range 0:" + length());
         }
-        int bitInByte = position % 8;
+        int bitInByte = (position % 8) - 1;
         byte b = getByteFor(position);
-        return (b | getOneMask(bitInByte)) > 0;
+        System.err.println("looking at byte: " + byteToString(b));
+        System.err.println("OR mask: " + byteToString(getOneMask(bitInByte)));
+        System.err.println(byteToString((byte) (b & getOneMask(bitInByte))));
+        return ((byte) (b & getOneMask(bitInByte))) != (byte) 0x00;
     }
 
     public LessMemoryBits clear(int position)
@@ -136,6 +164,38 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
     {
         set(position, !get(position));
         return this;
+    }
+
+    @Override
+    public LessMemoryBits getInclusive(int start, int end)
+    {
+        if ( end < start )
+        {
+            throw new RuntimeException("avoiding infinite loop");
+        }
+        LessMemoryBits bits = new LessMemoryBits();
+        for ( int i = start; i <= end; i++ )
+        {
+            boolean isOne = this.get(i);
+            System.err.println("adding bit: " + ((isOne)?"1":"0"));
+            bits.addBit(isOne);
+        }
+        return bits;
+    }
+
+    @Override
+    public LessMemoryBits getExclusive(int start, int end)
+    {
+        if ( end < start )
+        {
+            throw new RuntimeException("avoiding infinite loop");
+        }
+        LessMemoryBits bits = new LessMemoryBits();
+        for ( int i = start; i < end; i++ )
+        {
+            bits.addBit(this.get(i));
+        }
+        return bits;
     }
 
     public int length()
@@ -225,6 +285,14 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
         return lessMemoryBits;
     }
 
+    public void addBit(boolean isOne)
+    {
+        int size = length();
+        expandTo(size + 1);
+        System.err.println("expanded to " + length());
+        set(size, isOne);
+    }
+
     public void addByte(byte b)
     {
 //        System.err.println("buffer size: " + bufferSize);
@@ -237,7 +305,7 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
         }
         else
         {
-            System.err.println("adding new byte array at " + bitCount);
+//            System.err.println("adding new byte array at " + bitCount);
             byte[] bytes = new byte[bufferSize];
             bytes[0] = b;
             bits.add(bytes);
@@ -266,14 +334,14 @@ public class LessMemoryBits implements BitStream<Boolean,LessMemoryBits>, Serial
     private String byteToString(byte b)
     {
         String s = "";
-        s += ( (b & 0x80) > 0 ) ? "1":"0";
-        s += ( (b & 0x40) > 0 ) ? "1":"0";
-        s += ( (b & 0x20) > 0 ) ? "1":"0";
-        s += ( (b & 0x10) > 0 ) ? "1":"0";
-        s += ( (b & 0x08) > 0 ) ? "1":"0";
-        s += ( (b & 0x04) > 0 ) ? "1":"0";
-        s += ( (b & 0x02) > 0 ) ? "1":"0";
-        s += ( (b & 0x01) > 0 ) ? "1":"0";
+        s += ( (b & 0x80) != 0 ) ? "1":"0";
+        s += ( (b & 0x40) != 0 ) ? "1":"0";
+        s += ( (b & 0x20) != 0 ) ? "1":"0";
+        s += ( (b & 0x10) != 0 ) ? "1":"0";
+        s += ( (b & 0x08) != 0 ) ? "1":"0";
+        s += ( (b & 0x04) != 0 ) ? "1":"0";
+        s += ( (b & 0x02) != 0 ) ? "1":"0";
+        s += ( (b & 0x01) != 0 ) ? "1":"0";
         return s;
     }
 }

@@ -1,10 +1,11 @@
 package com.cobenian.protocol.bits;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,5 +58,29 @@ public class ProtocolBitsTest
         FileOutputStream fw = new FileOutputStream("/tmp/dns3.cap");
         fw.write(sameBits.toByteArray());
         fw.close();
+    }
+
+    @Test
+    public void testRangeInclusive() throws IOException
+    {
+        ProtocolBits bits = ProtocolBits.read(new FileInputStream("/tmp/dns.cap"));
+        ProtocolBits range = bits.getInclusive(569, 572);
+
+        Assert.assertEquals(4, range.length());
+
+        System.err.println("range: " + range);
+
+    }
+
+    @Test
+    public void testRangeExclusive() throws IOException
+    {
+        ProtocolBits bits = ProtocolBits.read(new FileInputStream("/tmp/dns.cap"));
+        ProtocolBits range = bits.getExclusive(569, 572);
+
+        Assert.assertEquals(3, range.length());
+
+        System.err.println("range: " + range);
+
     }
 }

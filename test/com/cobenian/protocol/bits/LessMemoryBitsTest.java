@@ -1,5 +1,6 @@
 package com.cobenian.protocol.bits;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -8,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
 
 /**
  * @author brweber2
@@ -67,5 +67,29 @@ public class LessMemoryBitsTest
         FileOutputStream fw = new FileOutputStream("/tmp/dns33.cap");
         fw.write(sameBits.toByteArray());
         fw.close();
+    }
+
+    @Test
+    public void testRangeInclusive() throws IOException
+    {
+        LessMemoryBits bits = LessMemoryBits.read(new FileInputStream("/tmp/dns.cap"));
+        LessMemoryBits range = bits.getInclusive(569, 572);
+
+        Assert.assertEquals(4, range.length());
+
+        System.err.println("range: " + range);
+
+    }
+
+    @Test
+    public void testRangeExclusive() throws IOException
+    {
+        LessMemoryBits bits = LessMemoryBits.read(new FileInputStream("/tmp/dns.cap"));
+        LessMemoryBits range = bits.getExclusive(569, 572);
+
+        Assert.assertEquals(3, range.length());
+
+        System.err.println("range: " + range);
+
     }
 }
