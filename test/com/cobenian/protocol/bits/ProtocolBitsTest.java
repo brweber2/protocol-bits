@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -50,6 +51,11 @@ public class ProtocolBitsTest
         ois.close();
         fis.close();
 
-        Assert.assertEquals(bits, sameBits);
+        System.err.println("same bits>>>>");
+        System.err.println(sameBits);
+
+        FileOutputStream fw = new FileOutputStream("/tmp/dns3.cap");
+        fw.write(sameBits.toByteArray());
+        fw.close();
     }
 }

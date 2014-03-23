@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Collectors;
 
 /**
  * @author brweber2
@@ -112,7 +114,7 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
 
     private byte getMask(int y)
     {
-        return (byte) (1 << (8 - y + 1));
+        return (byte) (1 << (8 - y - 1));
     }
 
     @Override
@@ -125,6 +127,40 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
     public int size()
     {
         return bits.size();
+    }
+
+    public byte[] toByteArray()
+    {
+        int numberOfBytesNeeded = bits.size() / 8;
+        int numberOfRemainingBits = bits.size() % 8;
+
+        byte[] bytes = new byte[(numberOfBytesNeeded + ((numberOfRemainingBits == 0)?0:1))];
+        for ( int i = 0; i < numberOfBytesNeeded; i++ )
+        {
+            byte b = 0;
+            if ( bits.get(8 * i + 0).isOne() ) { b = (byte) (b | (byte) 0x80); }
+            if ( bits.get(8 * i + 1).isOne() ) { b = (byte) (b | (byte) 0x40); }
+            if ( bits.get(8 * i + 2).isOne() ) { b = (byte) (b | (byte) 0x20); }
+            if ( bits.get(8 * i + 3).isOne() ) { b = (byte) (b | (byte) 0x10); }
+            if ( bits.get(8 * i + 4).isOne() ) { b = (byte) (b | (byte) 0x08); }
+            if ( bits.get(8 * i + 5).isOne() ) { b = (byte) (b | (byte) 0x04); }
+            if ( bits.get(8 * i + 6).isOne() ) { b = (byte) (b | (byte) 0x02); }
+            if ( bits.get(8 * i + 7).isOne() ) { b = (byte) (b | (byte) 0x01); }
+            bytes[i] = b;
+        }
+        if ( numberOfRemainingBits > 0 )
+        {
+            byte b = 0;
+            for (int y = 0; y < numberOfRemainingBits; y++)
+            {
+                if (bits.get(8 * numberOfBytesNeeded + y).isOne())
+                {
+                    b = (byte) (b | getMask(y));
+                }
+            }
+            bytes[numberOfBytesNeeded] = b;
+        }
+        return bytes;
     }
 
     public static ProtocolBits read(InputStream inputStream) throws IOException
