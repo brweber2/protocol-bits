@@ -3,17 +3,25 @@ package com.cobenian.protocol.bits;
 /**
  * @author brweber2
  */
-public class Bit
+public enum Bit
 {
-    // enum better here?
-    public static final Bit ZERO = new Bit(false);
-    public static final Bit ONE = new Bit(true);
+    ZERO(false),
+    ONE(true);
 
-    private boolean isOne;
+    private final boolean isOne;
 
-    public Bit(boolean isOne)
+    Bit(boolean isOne)
     {
         this.isOne = isOne;
+    }
+
+    public static Bit fromBoolean(boolean isOne)
+    {
+        if (isOne)
+        {
+            return ONE;
+        }
+        return ZERO;
     }
 
     public boolean isZero()
@@ -28,27 +36,22 @@ public class Bit
 
     public Bit and(Bit other)
     {
-        return new Bit(isOne && other.isOne);
+        return Bit.fromBoolean(isOne && other.isOne);
     }
 
     public Bit or(Bit other)
     {
-        return new Bit(isOne || other.isOne);
+        return Bit.fromBoolean(isOne || other.isOne);
     }
 
     public Bit xor(Bit other)
     {
-        return new Bit(!matches(other));
+        return Bit.fromBoolean(!matches(other));
     }
 
     public Bit not()
     {
-        return new Bit(!isOne);
-    }
-
-    // todo bad idea to have mutation in this class?
-    public void flip() {
-        isOne = !isOne;
+        return Bit.fromBoolean(!isOne);
     }
 
     public boolean matches(Bit other)
@@ -59,6 +62,6 @@ public class Bit
     @Override
     public String toString()
     {
-        return (isOne)? "1":"0";
+        return (isOne) ? "1" : "0";
     }
 }

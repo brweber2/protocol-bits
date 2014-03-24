@@ -16,7 +16,7 @@ import java.util.List;
  *         <p>
  *         This class is a serlization efficient, but memory inefficient implementation of BitStream
  */
-public class ProtocolBits extends AbstractCollection<Bit> implements Collection<Bit>, BitStream<Bit,ProtocolBits>, Serializable
+public class ProtocolBits extends AbstractCollection<Bit> implements Collection<Bit>, BitStream<Bit, ProtocolBits>, Serializable
 {
     private transient List<Bit> bits;
 
@@ -34,7 +34,7 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
     {
         if (position >= bits.size())
         {
-            bits.add(position, bit);
+            bits.add(position, bit);  // todo this throws index out of bounds...
         } else
         {
             bits.set(position, bit);
@@ -140,21 +140,21 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
         for (int i = 0; i < numberOfBytesToRead; i++)
         {
             byte b = in.readByte();
-            bits.set(8 * i + 0, new Bit((b & 0x80) != 0));
-            bits.set(8 * i + 1, new Bit((b & 0x40) != 0));
-            bits.set(8 * i + 2, new Bit((b & 0x20) != 0));
-            bits.set(8 * i + 3, new Bit((b & 0x10) != 0));
-            bits.set(8 * i + 4, new Bit((b & 0x08) != 0));
-            bits.set(8 * i + 5, new Bit((b & 0x04) != 0));
-            bits.set(8 * i + 6, new Bit((b & 0x02) != 0));
-            bits.set(8 * i + 7, new Bit((b & 0x01) != 0));
+            bits.set(8 * i + 0, Bit.fromBoolean((b & 0x80) != 0));
+            bits.set(8 * i + 1, Bit.fromBoolean((b & 0x40) != 0));
+            bits.set(8 * i + 2, Bit.fromBoolean((b & 0x20) != 0));
+            bits.set(8 * i + 3, Bit.fromBoolean((b & 0x10) != 0));
+            bits.set(8 * i + 4, Bit.fromBoolean((b & 0x08) != 0));
+            bits.set(8 * i + 5, Bit.fromBoolean((b & 0x04) != 0));
+            bits.set(8 * i + 6, Bit.fromBoolean((b & 0x02) != 0));
+            bits.set(8 * i + 7, Bit.fromBoolean((b & 0x01) != 0));
         }
         if (numberOfRemainingBits > 0)
         {
             byte b = in.readByte();
             for (int y = 0; y < numberOfRemainingBits; y++)
             {
-                bits.set(8 * numberOfBytesToRead + y, new Bit((b & getMask(y)) != 0));
+                bits.set(8 * numberOfBytesToRead + y, Bit.fromBoolean((b & getMask(y)) != 0));
             }
         }
     }
@@ -242,14 +242,14 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
         while ((i = inputStream.read()) != -1)
         {
             byte b = (byte) i;
-            bits.set(index++, new Bit((b & 0x80) != 0));
-            bits.set(index++, new Bit((b & 0x40) != 0));
-            bits.set(index++, new Bit((b & 0x20) != 0));
-            bits.set(index++, new Bit((b & 0x10) != 0));
-            bits.set(index++, new Bit((b & 0x08) != 0));
-            bits.set(index++, new Bit((b & 0x04) != 0));
-            bits.set(index++, new Bit((b & 0x02) != 0));
-            bits.set(index++, new Bit((b & 0x01) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x80) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x40) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x20) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x10) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x08) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x04) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x02) != 0));
+            bits.set(index++, Bit.fromBoolean((b & 0x01) != 0));
         }
         return bits;
     }

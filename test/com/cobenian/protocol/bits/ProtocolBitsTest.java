@@ -5,9 +5,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -28,7 +26,7 @@ public class ProtocolBitsTest
     @Test
     public void testStream2() throws IOException
     {
-        ProtocolBits bits = ProtocolBits.read(new ByteArrayInputStream(new byte[] {1, 2, 3}));
+        ProtocolBits bits = ProtocolBits.read(new ByteArrayInputStream(new byte[]{1, 2, 3}));
         bits.stream().forEach(System.err::print);
         System.err.println();
     }
