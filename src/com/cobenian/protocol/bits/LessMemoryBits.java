@@ -31,16 +31,6 @@ public class LessMemoryBits implements BitStream<Boolean, LessMemoryBits>, Seria
         this.bufferSize = DEFAULT_BUFFER_SIZE;
     }
 
-    public int getByteForBit(int position)
-    {
-        int a = position / 8;
-        if ( position % 8 == 0 )
-        {
-            return a;
-        }
-        return a - 1; // zero indexed
-    }
-
     private boolean outOfRange(int position)
     {
         return position >= bitCount;
