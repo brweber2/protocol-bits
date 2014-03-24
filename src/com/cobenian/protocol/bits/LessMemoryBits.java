@@ -270,7 +270,6 @@ public class LessMemoryBits extends AbstractCollection<byte[]> implements Collec
     {
         int size = length();
         expandTo(size + 1);
-        System.err.println("expanded to " + length());
         set(size, isOne);
     }
 
@@ -293,12 +292,7 @@ public class LessMemoryBits extends AbstractCollection<byte[]> implements Collec
 
     public int getArrayForByte(int byteIndex)
     {
-        int arrayIndex = byteIndex / bufferSize;
-        if ( arrayIndex % bufferSize == 0 )
-        {
-            return arrayIndex;
-        }
-        return arrayIndex - 1;
+       return byteIndex / bufferSize;
     }
 
 }

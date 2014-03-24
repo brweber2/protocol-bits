@@ -13,12 +13,7 @@ public interface Bits<BitType>
 
     public default int getByteForBit(int position)
     {
-        int a = position / 8;
-        if ( position % 8 == 0 )
-        {
-            return a;
-        }
-        return a - 1; // zero indexed
+        return position / 8;
     }
 
     public default byte getOneMask(int bitInByte)
