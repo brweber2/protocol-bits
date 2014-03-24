@@ -174,7 +174,7 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
             {
                 if (bits.get(8 * numberOfBytesNeeded + y).isOne())
                 {
-                    b = (byte) (b | getMask(y));
+                    b = (byte) (b | getOneMask(y));
                 }
             }
             bytes[numberOfBytesNeeded] = b;
@@ -232,7 +232,7 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
             byte b = 0;
             if (bits.get(8 * bytesToWrite + y).isOne())
             {
-                b = (byte) (b | getMask(y));
+                b = (byte) (b | getOneMask(y));
             }
             out.writeByte(b);
         }
@@ -263,7 +263,7 @@ public class ProtocolBits extends AbstractCollection<Bit> implements Collection<
             byte b = in.readByte();
             for (int y = 0; y < numberOfRemainingBits; y++)
             {
-                bits.set(8 * numberOfBytesToRead + y, Bit.fromBoolean((b & getMask(y)) != 0));
+                bits.set(8 * numberOfBytesToRead + y, Bit.fromBoolean((b & getOneMask(y)) != 0));
             }
         }
     }

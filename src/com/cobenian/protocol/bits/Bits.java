@@ -21,8 +21,27 @@ public interface Bits<BitType>
         return a - 1; // zero indexed
     }
 
-    public default byte getMask(int y)
+    public default byte getOneMask(int bitInByte)
     {
-        return (byte) (1 << (8 - y - 1));
+        return (byte) (1 << ((8 - bitInByte - 1)));
+    }
+
+    public default byte getZeroMask(int bitInByte)
+    {
+        return (byte) ~getOneMask(bitInByte);
+    }
+
+    public default String byteToString(byte b)
+    {
+        String s = "";
+        s += ((b & 0x80) != 0) ? "1" : "0";
+        s += ((b & 0x40) != 0) ? "1" : "0";
+        s += ((b & 0x20) != 0) ? "1" : "0";
+        s += ((b & 0x10) != 0) ? "1" : "0";
+        s += ((b & 0x08) != 0) ? "1" : "0";
+        s += ((b & 0x04) != 0) ? "1" : "0";
+        s += ((b & 0x02) != 0) ? "1" : "0";
+        s += ((b & 0x01) != 0) ? "1" : "0";
+        return s;
     }
 }
